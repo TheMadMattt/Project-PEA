@@ -1,0 +1,61 @@
+
+	Graph graph;
+	BruteForce brute;
+	BranchNBound branch;
+
+	TimeMeasure time;
+
+	vector<double> czasy;
+
+	int size = 13;
+
+	for(int y=0; y<size; y++){
+
+	graph.clearMatrix();
+	graph.setMatrix(graph.generateMatrix(y));
+
+	cout << "Branch and Bound" << endl;
+	for (int i = 0; i < 100; i++)
+	{
+		time.startCounting();
+		branch.BranchNBoundTSP(graph.getMatrix(), graph.getSize(), rand() % y);
+		double czas = time.getCounter();
+		czasy.push_back(czas);
+		cout << i + 1 << " iteracja" << endl;
+	}
+
+	string filename = "BnB";
+
+	stringstream ss;
+
+	ss << y;
+
+	filename += ss.str();
+
+	filename += ".txt";
+
+	cout << "Brute Force" << endl;
+	for (int i = 0; i < 100; i++)
+	{
+		time.startCounting();
+		branch.BranchNBoundTSP(graph.getMatrix(), graph.getSize(), rand() % y);
+		double czas = time.getCounter();
+		czasy.push_back(czas);
+		cout << i + 1 << " iteracja" << endl;
+	}
+
+	string filename2 = "BF";
+
+	stringstream ss;
+
+	ss << y;
+
+	filename2 += ss.str();
+
+	filename2 += ".txt";
+
+	TimeMeasure::saveToFile(czasy, filename2);
+	czasy.clear();
+	filename.clear();
+	filename2.clear();
+	}
