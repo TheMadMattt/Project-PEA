@@ -25,7 +25,7 @@ void Menu::ChooseOptionMenu()
 	cout << "[5] Wprowadz temperature chlodzenia, poczatkowa oraz minimalna" << endl;
 	cout << "[6] Wybierz generowanie poczatkowego rozwiazania" << endl;
 	cout << "[7] Wybierz rozwiazywnaie algorytmu" << endl;
-	cout << "[8] Wypisz wprowadzone dane" << endl;
+	cout << "[8] Simulated Annealing algorithm" << endl;
 	cout << "[0] Wyjscie" << endl;
 	cout << "Wybierz zadanie do uruchomienia: ";
 	cin >> temp;
