@@ -3,7 +3,6 @@
 #include <random>
 #include <ctime>
 #include <utility>
-#include <iostream>
 
 
 SimulatedAnnealing::SimulatedAnnealing(): currentTemp(-1), coolingTemp(-1), minTemp(-1)
@@ -11,13 +10,13 @@ SimulatedAnnealing::SimulatedAnnealing(): currentTemp(-1), coolingTemp(-1), minT
 }
 
 SimulatedAnnealing::SimulatedAnnealing(double current_temp, double cooling_temp, double min_temp,
-                                       std::vector<std::vector<int>> vectors)
-	: currentTemp(current_temp),
-	coolingTemp(cooling_temp),
-	minTemp(min_temp),
-	matrix(std::move(vectors))
+	std::vector<std::vector<int>> vectors, double stopTime, int randOption, int startOption)
+	: currentTemp(current_temp), coolingTemp(cooling_temp), minTemp(min_temp), matrix(std::move(vectors))
 {
 	this->iterations = pow(matrix.size(), 2) / 4;
+	this->set_stop_time(stopTime);
+	this->set_choose_random_option(randOption);
+	this->set_choose_starting_option(startOption);
 }
 
 SimulatedAnnealing::~SimulatedAnnealing()
@@ -63,25 +62,37 @@ void SimulatedAnnealing::set_iterations(int iterations)
 	this->iterations = iterations;
 }
 
-result SimulatedAnnealing::find_solution(double stopTime, int option)
+result SimulatedAnnealing::find_solution(double stopTime, int chooseRandomOption, int startingSolutionOption)
 {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<double> distribution(0.0, 1.0);
-	startingSolution();
+	switch (this->choose_starting_option())
+	{
+	case 1:
+		startingSolutionGreedy();
+		break;
+	case 2:
+		startingSolutionRand();
+		break;
+	default: startingSolutionRand();
+	}
 	finalResult = currentResult;
 	const clock_t start = clock();
 	while (currentTemp > minTemp)
 	{
 		for (int i = 0; i < iterations; i++)
 		{
-			if (option == 1) {
+			switch(this->choose_random_option()){
+			case 1: 
 				randomSwap();
-			}else if(option == 2)
-			{
+				break;
+			case 2:
 				randomInsert();
-			}else if(option == 3)
-			{
+				break;
+			case 3:
 				randomReverse();
+				break;
+			default: randomSwap();
 			}
 			currentResult.cost = calculatePathCost(currentResult.path);
 			if(currentResult.cost < bestResult.cost || distribution(generator) < probability())
@@ -108,7 +119,7 @@ double SimulatedAnnealing::probability() const
 	return exp(power);
 }
 
-void SimulatedAnnealing::startingSolution()
+void SimulatedAnnealing::startingSolutionGreedy()
 {
 	currentResult.path.clear();
 	currentResult.cost = 0;
@@ -149,6 +160,25 @@ void SimulatedAnnealing::startingSolution()
 		currentResult.path[i] = city_x;
 	}
 	currentResult.path[matrix.size()] = currentResult.path[0];
+
+	currentResult.cost = calculatePathCost(currentResult.path);
+	bestResult = currentResult;
+}
+
+void SimulatedAnnealing::startingSolutionRand()
+{
+	currentResult.path.clear();
+	currentResult.cost = 0;
+
+	currentResult.path.resize(matrix.size() + 1);
+
+	for(int i=0; i < matrix.size(); i++)
+	{
+		currentResult.path[i] = i;
+	}
+	currentResult.path[currentResult.path.size() - 1] = 0;
+
+	std::shuffle(currentResult.path.begin() + 1, currentResult.path.end() - 1, std::mt19937(std::random_device()()));
 
 	currentResult.cost = calculatePathCost(currentResult.path);
 	bestResult = currentResult;

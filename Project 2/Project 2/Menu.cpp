@@ -4,7 +4,7 @@
 
 using namespace std;
 
-double coolTemp, startingTemp, finalTemp;
+double coolTemp, startingTemp, finalTemp, startOption, stopTime, randOption;
 
 Menu::Menu(): option(NULL)
 {
@@ -19,11 +19,13 @@ void Menu::ChooseOptionMenu()
 	system("cls");
 	string temp;
 	cout << "[1] Wczytaj dane z pliku" << endl;
-	cout << "[2] Wyswietl wczytane dane" << endl;
-	cout << "[3] Wprowadz kryterium stopu" << endl;
-	cout << "[4] Wprowadz temperature chlodzenia, poczatkowa oraz minimalna" << endl;
-	cout << "[5] Losuj macierz" << endl;
-	cout << "[6] Wypisz wprowadzone dane" << endl;
+	cout << "[2] Losuj macierz" << endl;
+	cout << "[3] Wyswietl wczytane dane" << endl;
+	cout << "[4] Wprowadz kryterium stopu" << endl;
+	cout << "[5] Wprowadz temperature chlodzenia, poczatkowa oraz minimalna" << endl;
+	cout << "[6] Wybierz generowanie poczatkowego rozwiazania" << endl;
+	cout << "[7] Wybierz rozwiazywnaie algorytmu" << endl;
+	cout << "[8] Wypisz wprowadzone dane" << endl;
 	cout << "[0] Wyjscie" << endl;
 	cout << "Wybierz zadanie do uruchomienia: ";
 	cin >> temp;
@@ -42,6 +44,14 @@ void Menu::ChooseOptionMenu()
 		break;
 	case 2:
 		system("cls");
+		graph.clearMatrix();
+		graph.setMatrix(graph.generateMatrix(chooseSize()));
+		Graph::printMatrix(graph.getMatrix());
+		system("pause");
+		ChooseOptionMenu();
+		break;
+	case 3:
+		system("cls");
 		if (graph.getSize() >= 2) {
 			Graph::printMatrix(graph.getMatrix());
 		}
@@ -52,16 +62,14 @@ void Menu::ChooseOptionMenu()
 		system("pause");
 		ChooseOptionMenu();
 		break;
-	case 3:
+	case 4:
 		system("cls");
-		double stopTime;
 		cout << "Wpisz kryterium stopu w sekundach: ";
 		cin >> stopTime;
-		algorithm.set_stop_time(stopTime);
 		system("pause");
 		ChooseOptionMenu();
 		break;
-	case 4:
+	case 5:
 		system("cls");
 		cout << "Wpisz temperature chlodzenia: ";
 		cin >> coolTemp;
@@ -72,29 +80,34 @@ void Menu::ChooseOptionMenu()
 		system("pause");
 		ChooseOptionMenu();
 		break;
-	case 5:
+	case 6:
 		system("cls");
-		graph.clearMatrix();
-		graph.setMatrix(graph.generateMatrix(chooseSize()));
-		Graph::printMatrix(graph.getMatrix());
+		cout << "Wybierz opcje rozwiazywania algorytmu: " << endl;
+		cout << "[1] Random Swap" << endl;
+		cout << "[2] Random Insert" << endl;
+		cout << "[3] Random Reverse" << endl;
+		cin >> randOption;
 		system("pause");
 		ChooseOptionMenu();
 		break;
-	case 6:
+	case 7:
 		system("cls");
-		SAalgorithm = SimulatedAnnealing(startingTemp, coolTemp, finalTemp, graph.getMatrix());
-		if (startingTemp != SAalgorithm.getCurrentTemp())
+		cout << "Wybierz opcje rozwiazywania algorytmu: " << endl;
+		cout << "[1] Greedy" << endl;
+		cout << "[2] Rand" << endl;
+		cin >> startOption;
+		system("pause");
+		ChooseOptionMenu();
+		break;
+	case 8:
+		system("cls");
+		simulatedAnnealing = SimulatedAnnealing(startingTemp, coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
+		if (startingTemp != simulatedAnnealing.getCurrentTemp())
 		{
-			SAalgorithm.set_current_temp(startingTemp);
+			simulatedAnnealing.set_current_temp(startingTemp);
 		}
-		if (SAalgorithm.getCurrentTemp() > 0 || SAalgorithm.getCoolingTemp() > 0 || SAalgorithm.getMinTemp() > 0){
-			int solution;
-			cout << "Wybierz opcje rozwiazywania algorytmu: " << endl;
-			cout << "[1] Random Swap" << endl;
-			cout << "[2] Random Insert" << endl;
-			cout << "[3] Random Reverse" << endl;
-			cin >> solution;
-			result = SAalgorithm.find_solution(algorithm.stop_time(), solution);
+		if (simulatedAnnealing.getCurrentTemp() > 0 || simulatedAnnealing.getCoolingTemp() > 0 || simulatedAnnealing.getMinTemp() > 0){
+			result = simulatedAnnealing.find_solution(simulatedAnnealing.stop_time(), simulatedAnnealing.choose_random_option(), simulatedAnnealing.choose_starting_option());
 			cout << result.cost << endl;
 			printPath(result.path);
 		}else

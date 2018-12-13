@@ -7,8 +7,7 @@ class Menu
 {
 private:
 	int option;
-	Algorithm algorithm;
-	SimulatedAnnealing SAalgorithm;
+	SimulatedAnnealing simulatedAnnealing;
 	Graph graph;
 	result result;
 public:

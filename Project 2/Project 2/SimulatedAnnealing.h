@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Algorithm.h"
 
 struct result
 {
@@ -7,7 +8,7 @@ struct result
 	int cost = 0;
 };
 
-class SimulatedAnnealing
+class SimulatedAnnealing : public Algorithm
 {
 private:
 	double currentTemp;
@@ -24,7 +25,7 @@ public:
 	SimulatedAnnealing();
 
 	SimulatedAnnealing(double current_temp, double cooling_temp, double min_temp,
-	                   std::vector<std::vector<int>> vectors);
+	                   std::vector<std::vector<int>> vectors, double stopTime, int randOption, int startOption);
 
 	~SimulatedAnnealing();
 	double getCoolingTemp() const;
@@ -35,9 +36,10 @@ public:
 	void set_min_temp(double min_temp);
 	int getIterations() const;
 	void set_iterations(int iterations);
-	result find_solution(double stopTime, int option);
+	result find_solution(double stopTime, int chooseRandomOption, int startingSolutionOption);
 	double probability() const;
-	void startingSolution();
+	void startingSolutionGreedy();
+	void startingSolutionRand();
 	void randomSwap();
 	void randomInsert();
 	void randomReverse();
