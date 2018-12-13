@@ -79,6 +79,9 @@ result SimulatedAnnealing::find_solution(double stopTime, int option)
 			}else if(option == 2)
 			{
 				randomInsert();
+			}else if(option == 3)
+			{
+				randomReverse();
 			}
 			currentResult.cost = calculatePathCost(currentResult.path);
 			if(currentResult.cost < bestResult.cost || distribution(generator) < probability())
@@ -90,7 +93,7 @@ result SimulatedAnnealing::find_solution(double stopTime, int option)
 				}
 			}
 		}
-
+		currentTemp *= coolingTemp;
 		if(((double)(clock() - start)/CLOCKS_PER_SEC) == stopTime && stopTime > 0)
 		{
 			break;
@@ -183,18 +186,33 @@ void SimulatedAnnealing::randomInsert()
 	currentResult = std::move(tempResult);
 }
 
+void SimulatedAnnealing::randomReverse()
+{
+	const int cityNumber = bestResult.path.size();
+	int a = rand() % (cityNumber - 2) + 1;
+	int b = rand() % (cityNumber - 2) + 1;
+
+	while (a == b)
+		b = rand() % (cityNumber - 2) + 1;
+
+	result tempResult = bestResult;
+
+	if (a < b) {
+		std::reverse(tempResult.path.begin() + a, tempResult.path.begin() + b);
+	}else
+	{
+		std::reverse(tempResult.path.begin() + b , tempResult.path.begin() + a);
+	}
+
+	currentResult = std::move(tempResult);
+}
+
 int SimulatedAnnealing::calculatePathCost(std::vector<int> path)
 {
 	double pathCost = 0;
-	int previous = 0;
-	for (int i = 0; i < path.size(); i++)
+	for (int i = 0; i < path.size()-1; i++)
 	{
-		pathCost += matrix[previous][path[i]];
-		previous = path[i];
+		pathCost += matrix[path[i]][path[i+1]];
 	}
-	pathCost += matrix[previous][0];
 	return pathCost;
 }
-
-
-

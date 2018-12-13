@@ -40,6 +40,7 @@ public:
 	void startingSolution();
 	void randomSwap();
 	void randomInsert();
+	void randomReverse();
 	int calculatePathCost(std::vector<int> path);
 };
 

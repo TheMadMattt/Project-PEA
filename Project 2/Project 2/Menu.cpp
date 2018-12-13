@@ -92,6 +92,7 @@ void Menu::ChooseOptionMenu()
 			cout << "Wybierz opcje rozwiazywania algorytmu: " << endl;
 			cout << "[1] Random Swap" << endl;
 			cout << "[2] Random Insert" << endl;
+			cout << "[3] Random Reverse" << endl;
 			cin >> solution;
 			result = SAalgorithm.find_solution(algorithm.stop_time(), solution);
 			cout << result.cost << endl;
