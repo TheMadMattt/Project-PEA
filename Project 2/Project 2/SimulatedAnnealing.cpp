@@ -3,15 +3,16 @@
 #include <random>
 #include <ctime>
 #include <utility>
+#include <chrono>
 
 
 SimulatedAnnealing::SimulatedAnnealing(): currentTemp(-1), coolingTemp(-1), minTemp(-1)
 {
 }
 
-SimulatedAnnealing::SimulatedAnnealing(double current_temp, double cooling_temp, double min_temp,
+SimulatedAnnealing::SimulatedAnnealing(double cooling_temp, double min_temp,
 	std::vector<std::vector<int>> vectors, double stopTime, int randOption, int startOption)
-	: currentTemp(current_temp), coolingTemp(cooling_temp), minTemp(min_temp), matrix(std::move(vectors))
+	: coolingTemp(cooling_temp), minTemp(min_temp), matrix(std::move(vectors))
 {
 	this->iterations = pow(matrix.size(), 2) / 4;
 	this->set_stop_time(stopTime);
@@ -66,6 +67,8 @@ result SimulatedAnnealing::find_solution(double stopTime, int chooseRandomOption
 {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<double> distribution(0.0, 1.0);
+	const auto start = std::chrono::high_resolution_clock::now();
+	int swapsTried = 0, swapsAccepted = 0;
 	switch (this->choose_starting_option())
 	{
 	case 1:
@@ -77,7 +80,7 @@ result SimulatedAnnealing::find_solution(double stopTime, int chooseRandomOption
 	default: startingSolutionRand();
 	}
 	finalResult = currentResult;
-	const clock_t start = clock();
+	this->currentTemp = 1.5*currentResult.cost;
 	while (currentTemp > minTemp)
 	{
 		for (int i = 0; i < iterations; i++)
@@ -94,18 +97,25 @@ result SimulatedAnnealing::find_solution(double stopTime, int chooseRandomOption
 				break;
 			default: randomSwap();
 			}
+			swapsTried++;
 			currentResult.cost = calculatePathCost(currentResult.path);
 			if(currentResult.cost < bestResult.cost || distribution(generator) < probability())
 			{
+				swapsAccepted++;
 				bestResult = currentResult;
 				if(bestResult.cost < finalResult.cost)
 				{
+					bestResult.bestSolutionTime = std::chrono::duration_cast<std::chrono::microseconds>
+						(Clock::now() - start).count();
+					bestResult.finalTemp = currentTemp;
 					finalResult = bestResult;
+
 				}
 			}
 		}
 		currentTemp *= coolingTemp;
-		if(((double)(clock() - start)/CLOCKS_PER_SEC) == stopTime && stopTime > 0)
+		if(std::chrono::duration_cast<std::chrono::microseconds>
+			(Clock::now() - start).count() == stopTime && stopTime > 0)
 		{
 			break;
 		}

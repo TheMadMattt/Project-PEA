@@ -1,11 +1,16 @@
 #pragma once
 #include <vector>
 #include "Algorithm.h"
+#include <chrono>
+
+typedef std::chrono::high_resolution_clock Clock;
 
 struct result
 {
 	std::vector<int> path;
 	int cost = 0;
+	double bestSolutionTime = 0;
+	double finalTemp = 0;
 };
 
 class SimulatedAnnealing : public Algorithm
@@ -24,7 +29,7 @@ private:
 public:
 	SimulatedAnnealing();
 
-	SimulatedAnnealing(double current_temp, double cooling_temp, double min_temp,
+	SimulatedAnnealing(double cooling_temp, double min_temp,
 	                   std::vector<std::vector<int>> vectors, double stopTime, int randOption, int startOption);
 
 	~SimulatedAnnealing();

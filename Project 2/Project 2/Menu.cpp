@@ -4,9 +4,9 @@
 
 using namespace std;
 
-double coolTemp, startingTemp, finalTemp, startOption, stopTime, randOption;
+double coolTemp = 0, finalTemp = 0, startOption = -1, stopTime = 0, randOption = -1;
 
-Menu::Menu(): option(NULL)
+Menu::Menu() : option(NULL)
 {
 }
 
@@ -21,10 +21,39 @@ void Menu::ChooseOptionMenu()
 	cout << "[1] Wczytaj dane z pliku" << endl;
 	cout << "[2] Losuj macierz" << endl;
 	cout << "[3] Wyswietl wczytane dane" << endl;
-	cout << "[4] Wprowadz kryterium stopu" << endl;
-	cout << "[5] Wprowadz temperature chlodzenia, poczatkowa oraz minimalna" << endl;
-	cout << "[6] Wybierz generowanie poczatkowego rozwiazania" << endl;
-	cout << "[7] Wybierz rozwiazywnaie algorytmu" << endl;
+	cout << "[4] Wybierz kryterium stopu: " << stopTime << endl;
+	cout << "[5] Wybierz temperature chlodzenia oraz minimalna: " <<
+		coolTemp << ", " << finalTemp << endl;
+	cout << "[6] Wybierz rozwiazywnaie algorytmu";
+	if (randOption == -1)
+	{
+		cout << endl;
+	}
+	else if (randOption == 1)
+	{
+		cout << ": Random Swap" << endl;
+	}
+	else if (randOption == 2)
+	{
+		cout << ": Random Insert" << endl;
+	}
+	else if (randOption == 3)
+	{
+		cout << ": Random Reverse" << endl;
+	}
+	cout << "[7] Wybierz generowanie poczatkowego rozwiazania";
+	if (startOption == -1)
+	{
+		cout << endl;
+	}
+	else if (startOption == 1)
+	{
+		cout << ": Greedy solution" << endl;
+	}
+	else if (startOption == 2)
+	{
+		cout << ": Random solution" << endl;
+	}
 	cout << "[8] Simulated Annealing algorithm" << endl;
 	cout << "[0] Wyjscie" << endl;
 	cout << "Wybierz zadanie do uruchomienia: ";
@@ -73,8 +102,6 @@ void Menu::ChooseOptionMenu()
 		system("cls");
 		cout << "Wpisz temperature chlodzenia: ";
 		cin >> coolTemp;
-		cout << "Wpisz temperature poczatkowa: ";
-		cin >> startingTemp;
 		cout << "Wpisz temperature minimalna: ";
 		cin >> finalTemp;
 		system("pause");
@@ -82,7 +109,7 @@ void Menu::ChooseOptionMenu()
 		break;
 	case 6:
 		system("cls");
-		cout << "Wybierz opcje rozwiazywania algorytmu: " << endl;
+		cout << "Wybierz rozwiazywanie algorytmu: " << endl;
 		cout << "[1] Random Swap" << endl;
 		cout << "[2] Random Insert" << endl;
 		cout << "[3] Random Reverse" << endl;
@@ -92,27 +119,26 @@ void Menu::ChooseOptionMenu()
 		break;
 	case 7:
 		system("cls");
-		cout << "Wybierz opcje rozwiazywania algorytmu: " << endl;
-		cout << "[1] Greedy" << endl;
-		cout << "[2] Rand" << endl;
+		cout << "Wybierz generowanie poczatkowego rozwiazania algorytmu: " << endl;
+		cout << "[1] Greedy solution" << endl;
+		cout << "[2] Random solution" << endl;
 		cin >> startOption;
 		system("pause");
 		ChooseOptionMenu();
 		break;
 	case 8:
 		system("cls");
-		simulatedAnnealing = SimulatedAnnealing(startingTemp, coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
-		if (startingTemp != simulatedAnnealing.getCurrentTemp())
-		{
-			simulatedAnnealing.set_current_temp(startingTemp);
-		}
-		if (simulatedAnnealing.getCurrentTemp() > 0 || simulatedAnnealing.getCoolingTemp() > 0 || simulatedAnnealing.getMinTemp() > 0){
+		simulatedAnnealing = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
+		if (simulatedAnnealing.getCurrentTemp() > 0 || simulatedAnnealing.getCoolingTemp() > 0 || simulatedAnnealing.getMinTemp() > 0) {
 			result = simulatedAnnealing.find_solution(simulatedAnnealing.stop_time(), simulatedAnnealing.choose_random_option(), simulatedAnnealing.choose_starting_option());
-			cout << result.cost << endl;
+			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
+			cout << "Temperatura w trakcie znalezienia najlepszego rozwiazania: " << result.finalTemp << endl;
+			cout << "Koszt sciezki: " << result.cost << endl;
 			printPath(result.path);
-		}else
+		}
+		else
 		{
-			cout << "Wprowadz temperature chlodzenia, poczatkowa oraz minimalna w celu uruchomienia algorytmu" << endl;
+			cout << "Wprowadz temperature chlodzenia oraz minimalna w celu uruchomienia algorytmu" << endl;
 		}
 		system("pause");
 		ChooseOptionMenu();
@@ -130,15 +156,15 @@ void Menu::ChooseOptionMenu()
 int Menu::chooseCity() const
 {
 	int source;
-	cout << "Z ktorego miasta rozpoczac podroz? Wierzcholki: " << 0 << " - " << graph.getSize()-1 << " ";
+	cout << "Z ktorego miasta rozpoczac podroz? Wierzcholki: " << 0 << " - " << graph.getSize() - 1 << " ";
 	cin >> source;
 	while (true)
 	{
-		if (source >= 0 && source <= graph.getSize()-1)
+		if (source >= 0 && source <= graph.getSize() - 1)
 		{
 			break;
 		}
-		cout << "Podaj prawidlowy numer wierzcholka! Wierzcholki: " << 0 << " - " << graph.getSize()-1 << " ";
+		cout << "Podaj prawidlowy numer wierzcholka! Wierzcholki: " << 0 << " - " << graph.getSize() - 1 << " ";
 		cin >> source;
 	}
 
