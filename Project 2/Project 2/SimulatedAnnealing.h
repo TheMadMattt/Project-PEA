@@ -23,7 +23,6 @@ private:
 
 	std::vector<std::vector<int>> matrix;
 
-	result finalResult;
 	result currentResult;
 	result bestResult;
 public:
@@ -41,7 +40,7 @@ public:
 	void set_min_temp(double min_temp);
 	int getIterations() const;
 	void set_iterations(int iterations);
-	result find_solution(int stopTime, int chooseRandomOption, int startingSolutionOption);
+	result find_solution(int stopTime, bool diverse);
 	double probability() const;
 	std::vector<int> getUnvisited(std::vector<int> path);
 	void startingSolutionGreedy();

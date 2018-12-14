@@ -4,6 +4,7 @@
 #include <ctime>
 #include <utility>
 #include <chrono>
+#include <iostream>
 
 
 SimulatedAnnealing::SimulatedAnnealing(): currentTemp(-1), coolingTemp(-1), minTemp(-1)
@@ -63,7 +64,7 @@ void SimulatedAnnealing::set_iterations(int iterations)
 	this->iterations = iterations;
 }
 
-result SimulatedAnnealing::find_solution(int stopTime, int chooseRandomOption, int startingSolutionOption)
+result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<double> distribution(0.0, 1.0);
@@ -79,10 +80,16 @@ result SimulatedAnnealing::find_solution(int stopTime, int chooseRandomOption, i
 		break;
 	default: startingSolutionRand();
 	}
-	finalResult = currentResult;
+	result finalResult = currentResult;
+	int prevCurrentCost = currentResult.cost;
+	int prevBestCost = currentResult.cost;
 	this->currentTemp = 1.5*currentResult.cost;
-	while (currentTemp > minTemp)
+	double startingTemp = currentTemp;
+	int noIterationChange = 0;
+	while (!exitLoop)
 	{
+		auto swapsTried = 0;
+		auto swapsAccepted = 0;
 		for (int i = 0; i < iterations; i++)
 		{
 			switch(this->choose_random_option()){
@@ -97,9 +104,11 @@ result SimulatedAnnealing::find_solution(int stopTime, int chooseRandomOption, i
 				break;
 			default: randomSwap();
 			}
+			swapsTried++;
 			currentResult.cost = calculatePathCost(currentResult.path);
 			if(currentResult.cost < bestResult.cost || distribution(generator) < probability())
 			{
+				swapsAccepted++;
 				bestResult = currentResult;
 				if(bestResult.cost < finalResult.cost)
 				{
@@ -117,11 +126,37 @@ result SimulatedAnnealing::find_solution(int stopTime, int chooseRandomOption, i
 				break;
 			}
 		}
-		if(exitLoop)
+		const auto swapsRatio = static_cast<double>(swapsAccepted) / swapsTried;
+		if(prevCurrentCost == currentResult.cost)
 		{
-			break;
+			noIterationChange++;
+		}else
+		{
+			noIterationChange = 0;
 		}
+		prevCurrentCost = currentResult.cost;
+
 		currentTemp *= coolingTemp;
+
+		if(diverse && (noIterationChange >= 10 || swapsRatio < minTemp))
+		{
+			if(prevBestCost != finalResult.cost)
+			{
+				std::cout << "Reached local minimum - starting over from best path (best " << finalResult.cost << ")\n";
+				currentResult = finalResult;
+				prevBestCost = finalResult.cost;
+
+				currentTemp = startingTemp;
+			}else
+			{
+				std::cout << "Best path doesn't improve - starting over from best path and increasing temperature (best " << finalResult.cost << ")\n";
+				currentResult = finalResult;
+
+				startingTemp *= 100;
+				currentTemp = startingTemp;
+				iterations *= 10;
+			}
+		}
 	}
 	return finalResult;
 }

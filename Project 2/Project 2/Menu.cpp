@@ -6,6 +6,8 @@ using namespace std;
 
 double coolTemp = 0, finalTemp = 0;
 int startOption = -1, stopTime = 0, randOption = -1;
+std::string filename;
+bool diverse = false;
 
 Menu::Menu() : option(NULL)
 {
@@ -55,7 +57,15 @@ void Menu::ChooseOptionMenu()
 	{
 		cout << ": Random solution" << endl;
 	}
-	cout << "[8] Simulated Annealing algorithm" << endl;
+	cout << "[8] Dywersyfikacja";
+	if(diverse)
+	{
+		cout << " - ON" << endl;
+	}else
+	{
+		cout << " - OFF" << endl;
+	}
+	cout << "[9] Simulated Annealing algorithm" << endl;
 	cout << "[0] Wyjscie" << endl;
 	cout << "Wybierz zadanie do uruchomienia: ";
 	cin >> temp;
@@ -65,10 +75,13 @@ void Menu::ChooseOptionMenu()
 	switch (option)
 	{
 	case 1:
+
 		system("cls");
+		std::cout << "Podaj nazwe pliku z rozszerzeniem [.atsp]: ";
 		cin.ignore();
+		getline(std::cin, filename);
 		graph.clearMatrix();
-		graph.readFromFile();
+		graph.readFromFile(filename);
 		system("pause");
 		ChooseOptionMenu();
 		break;
@@ -129,9 +142,14 @@ void Menu::ChooseOptionMenu()
 		break;
 	case 8:
 		system("cls");
+		diverse = !diverse;
+		ChooseOptionMenu();
+		break;
+	case 9:
+		system("cls");
 		simulatedAnnealing = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
 		if (simulatedAnnealing.getCurrentTemp() > 0 || simulatedAnnealing.getCoolingTemp() > 0 || simulatedAnnealing.getMinTemp() > 0) {
-			result = simulatedAnnealing.find_solution(simulatedAnnealing.stop_time(), simulatedAnnealing.choose_random_option(), simulatedAnnealing.choose_starting_option());
+			result = simulatedAnnealing.find_solution(simulatedAnnealing.stop_time(), diverse);
 			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
 			cout << "Temperatura w trakcie znalezienia najlepszego rozwiazania: " << result.finalTemp << endl;
 			cout << "Koszt sciezki: " << result.cost << endl;

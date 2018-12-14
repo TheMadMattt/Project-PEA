@@ -18,6 +18,6 @@ public:
 	static int randomNumber();
 	int getSize() const;
 	static void printMatrix(std::vector<std::vector<int>> matrix);
-	void readFromFile();
+	void readFromFile(std::string filename);
 };
 

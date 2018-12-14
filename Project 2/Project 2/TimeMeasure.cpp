@@ -36,7 +36,7 @@ void TimeMeasure::startCounting()
 	CounterStart = li.QuadPart;
 }
 
-void TimeMeasure::saveToFile(vector<double> &czasy, string path)
+void TimeMeasure::saveToFile(vector<result> &czasy, string path)
 {
 	ofstream file;
 	const std::string filename = path;
@@ -44,9 +44,9 @@ void TimeMeasure::saveToFile(vector<double> &czasy, string path)
 
 	if (file.good())
 	{
-		for (double i : czasy)
+		for (result i : czasy)
 		{
-			file << i << endl;
+			file << i.bestSolutionTime/1000000 << " " << i.finalTemp << " " << i.cost << endl;
 		}
 	}
 

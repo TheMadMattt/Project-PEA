@@ -73,13 +73,10 @@ void Graph::printMatrix(std::vector<std::vector<int>> matrix)
 	std::cout << std::endl;
 }
 
-void Graph::readFromFile()
+void Graph::readFromFile(std::string filename)
 {
 	std::ifstream file;
-	std::cout << "Podaj nazwe pliku z rozszerzeniem [.atsp]: ";
-	std::string filename;
 	int value;
-	getline(std::cin, filename);
 
 	filename = converter.convert(filename);
 
