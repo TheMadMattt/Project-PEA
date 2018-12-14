@@ -4,7 +4,8 @@
 
 using namespace std;
 
-double coolTemp = 0, finalTemp = 0, startOption = -1, stopTime = 0, randOption = -1;
+double coolTemp = 0, finalTemp = 0;
+int startOption = -1, stopTime = 0, randOption = -1;
 
 Menu::Menu() : option(NULL)
 {

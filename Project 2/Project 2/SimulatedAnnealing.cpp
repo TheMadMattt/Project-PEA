@@ -63,12 +63,12 @@ void SimulatedAnnealing::set_iterations(int iterations)
 	this->iterations = iterations;
 }
 
-result SimulatedAnnealing::find_solution(double stopTime, int chooseRandomOption, int startingSolutionOption)
+result SimulatedAnnealing::find_solution(int stopTime, int chooseRandomOption, int startingSolutionOption)
 {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<double> distribution(0.0, 1.0);
+	bool exitLoop = false;
 	const auto start = std::chrono::high_resolution_clock::now();
-	int swapsTried = 0, swapsAccepted = 0;
 	switch (this->choose_starting_option())
 	{
 	case 1:
@@ -97,11 +97,9 @@ result SimulatedAnnealing::find_solution(double stopTime, int chooseRandomOption
 				break;
 			default: randomSwap();
 			}
-			swapsTried++;
 			currentResult.cost = calculatePathCost(currentResult.path);
 			if(currentResult.cost < bestResult.cost || distribution(generator) < probability())
 			{
-				swapsAccepted++;
 				bestResult = currentResult;
 				if(bestResult.cost < finalResult.cost)
 				{
@@ -112,13 +110,18 @@ result SimulatedAnnealing::find_solution(double stopTime, int chooseRandomOption
 
 				}
 			}
+			if (std::chrono::duration_cast<std::chrono::seconds>
+				(Clock::now() - start).count() > stopTime && stopTime > 0)
+			{
+				exitLoop = true;
+				break;
+			}
 		}
-		currentTemp *= coolingTemp;
-		if(std::chrono::duration_cast<std::chrono::microseconds>
-			(Clock::now() - start).count() == stopTime && stopTime > 0)
+		if(exitLoop)
 		{
 			break;
 		}
+		currentTemp *= coolingTemp;
 	}
 	return finalResult;
 }
@@ -129,47 +132,45 @@ double SimulatedAnnealing::probability() const
 	return exp(power);
 }
 
+std::vector<int> SimulatedAnnealing::getUnvisited(std::vector<int> path)
+{
+	std::vector<bool> visited(matrix.size(), false);	// true if vert visited in path
+	for (auto i : path)
+	{
+		visited[i] = true;
+	}
+	std::vector<int> unvisited;
+	for (auto i = 0; i < matrix.size(); i++)
+		if (!visited[i])
+			unvisited.push_back(i);
+
+	return unvisited;
+}
+
 void SimulatedAnnealing::startingSolutionGreedy()
 {
 	currentResult.path.clear();
 	currentResult.cost = 0;
 
-	int min = INT_MAX;
-	int city_x = 0, city_y = 0;
-	std::vector<bool> visited(matrix.size(), false);
-	currentResult.path.resize(matrix.size() + 1);
-
-	for (int i = 0; i < matrix.size(); i++)
+	currentResult.path.resize(1, 0);
+	auto v = 0;
+	while (currentResult.path.size() < static_cast<unsigned>(matrix.size()))
 	{
-		for (int y = 0; y < matrix.size(); y++)
+		auto current_best = INT_MAX;
+		auto best_u = 0;
+		for (auto u : getUnvisited(currentResult.path))
 		{
-			if (matrix[i][y] < min && matrix[i][y] > 0)
+			if (matrix[v][u] < current_best)
 			{
-				min = matrix[i][y];
-				city_x = i;
+				best_u = u;
+				current_best = matrix[v][u];
 			}
 		}
+		v = best_u;
+		currentResult.path.push_back(v);
 	}
 
-	currentResult.path[0] = city_x;
-	visited[city_x] = true;
-
-	for (int i = 1; i < matrix.size(); i++)
-	{
-		min = INT_MAX;
-		for (int y = 0; y < matrix.size(); y++)
-		{
-			if (!visited[y] && matrix[city_x][y] < min && matrix[city_x][y] > 0)
-			{
-				min = matrix[city_x][y];
-				city_y = y;
-			}
-		}
-		visited[city_y] = true;
-		city_x = city_y;
-		currentResult.path[i] = city_x;
-	}
-	currentResult.path[matrix.size()] = currentResult.path[0];
+	currentResult.path.push_back(currentResult.path[0]);
 
 	currentResult.cost = calculatePathCost(currentResult.path);
 	bestResult = currentResult;

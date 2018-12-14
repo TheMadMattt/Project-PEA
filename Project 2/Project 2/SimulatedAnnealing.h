@@ -41,8 +41,9 @@ public:
 	void set_min_temp(double min_temp);
 	int getIterations() const;
 	void set_iterations(int iterations);
-	result find_solution(double stopTime, int chooseRandomOption, int startingSolutionOption);
+	result find_solution(int stopTime, int chooseRandomOption, int startingSolutionOption);
 	double probability() const;
+	std::vector<int> getUnvisited(std::vector<int> path);
 	void startingSolutionGreedy();
 	void startingSolutionRand();
 	void randomSwap();
