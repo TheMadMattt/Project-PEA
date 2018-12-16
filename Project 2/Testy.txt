@@ -1,0 +1,106 @@
+double coolTemp = 0.99, finalTemp = 0.0001;
+	int randOption = 2, startOption = 1;
+
+	result results;
+	Graph graph;
+	SimulatedAnnealing sa;
+	int size = 10;
+	vector<result> vect;
+
+	graph.readFromFile("ftv47.atsp");
+	for (int y = 1; y <= 32; y=y*2) {
+		const int stopTime = y;
+		cout << "Czas algorytmu: " << stopTime << endl;
+
+		randOption = 2, startOption = 1;
+
+		for (int i = 0; i < size; i++)
+		{
+			sa = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
+			results = sa.find_solution(stopTime, true);
+			cout << results.cost << endl;
+			vect.push_back(results);
+		}
+		TimeMeasure::saveToFile(vect, "ftv47timeInsertGreedy.txt", stopTime);
+		vect.clear();
+		results.path.clear();
+
+		randOption = 2, startOption = 2;
+
+		for (int i = 0; i < size; i++)
+		{
+			sa = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
+			results = sa.find_solution(stopTime, true);
+			cout << results.cost << endl;
+			vect.push_back(results);
+		}
+		TimeMeasure::saveToFile(vect, "ftv47timeInsertRand.txt", stopTime);
+		vect.clear();
+		results.path.clear();
+	}
+
+	graph.clearMatrix();
+	graph.readFromFile("ftv170.atsp");
+	for (int y = 1; y <= 32; y = y * 2) {
+		const int stopTime = y;
+		cout << "Czas algorytmu: " << stopTime << endl;
+
+		randOption = 2, startOption = 1;
+
+		for (int i = 0; i < size; i++)
+		{
+			sa = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
+			results = sa.find_solution(stopTime, true);
+			cout << results.cost << endl;
+			vect.push_back(results);
+		}
+		TimeMeasure::saveToFile(vect, "ftv170timeInsertGreedy.txt", stopTime);
+		vect.clear();
+		results.path.clear();
+
+		randOption = 2, startOption = 2;
+
+		for (int i = 0; i < size; i++)
+		{
+			sa = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
+			results = sa.find_solution(stopTime, true);
+			cout << results.cost << endl;
+			vect.push_back(results);
+		}
+		TimeMeasure::saveToFile(vect, "ftv170timeInsertRand.txt", stopTime);
+		vect.clear();
+		results.path.clear();
+	}
+
+	graph.clearMatrix();
+	graph.readFromFile("rbg403.atsp");
+	for (int y = 1; y <= 32; y = y * 2) {
+		const int stopTime = y;
+		cout << "Czas algorytmu: " << stopTime << endl;
+
+		randOption = 2, startOption = 1;
+
+		for (int i = 0; i < size; i++)
+		{
+			sa = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
+			results = sa.find_solution(stopTime, true);
+			cout << results.cost << endl;
+			vect.push_back(results);
+		}
+		TimeMeasure::saveToFile(vect, "rbg403timeInsertGreedy.txt", stopTime);
+		vect.clear();
+		results.path.clear();
+
+		randOption = 2, startOption = 2;
+
+		for (int i = 0; i < size; i++)
+		{
+			sa = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
+			results = sa.find_solution(stopTime, true);
+			cout << results.cost << endl;
+			vect.push_back(results);
+		}
+		TimeMeasure::saveToFile(vect, "rbg403timeInsertRand.txt", stopTime);
+		vect.clear();
+		results.path.clear();
+	}

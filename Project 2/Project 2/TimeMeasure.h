@@ -12,6 +12,6 @@ public:
 	~TimeMeasure();
 	double getCounter() const;
 	void startCounting();
-	static void saveToFile(std::vector<result> &czasy, std::string path);
+	static void saveToFile(std::vector<result> &czasy, std::string path, int whichIt);
 };
 

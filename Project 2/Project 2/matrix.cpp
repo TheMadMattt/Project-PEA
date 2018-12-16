@@ -78,7 +78,7 @@ void Graph::readFromFile(std::string filename)
 	std::ifstream file;
 	int value;
 
-	filename = converter.convert(filename);
+	filename = convert(filename);
 
 	file.open(filename, std::ios::in);
 

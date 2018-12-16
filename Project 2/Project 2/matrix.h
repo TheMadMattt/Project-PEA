@@ -2,10 +2,9 @@
 #include <vector>
 #include "Converter.h"
 
-class Graph
+class Graph : public Converter
 {
 private:
-	Converter converter;
 	int size;
 	std::vector<std::vector<int>> matrix;
 public:

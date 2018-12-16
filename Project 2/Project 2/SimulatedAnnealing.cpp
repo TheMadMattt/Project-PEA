@@ -69,7 +69,10 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 	std::default_random_engine generator;
 	std::uniform_real_distribution<double> distribution(0.0, 1.0);
 	bool exitLoop = false;
-	const auto start = std::chrono::high_resolution_clock::now();
+	int maxSwaps = 2000;
+	int maxAcceptedSwaps = 1000;
+	int noIterationChange = 0;
+	auto start = std::chrono::high_resolution_clock::now();
 	switch (this->choose_starting_option())
 	{
 	case 1:
@@ -85,12 +88,11 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 	int prevBestCost = currentResult.cost;
 	this->currentTemp = 1.5*currentResult.cost;
 	double startingTemp = currentTemp;
-	int noIterationChange = 0;
 	while (!exitLoop)
 	{
 		auto swapsTried = 0;
 		auto swapsAccepted = 0;
-		for (int i = 0; i < iterations; i++)
+		while(swapsTried < maxSwaps && swapsAccepted < maxAcceptedSwaps)
 		{
 			switch(this->choose_random_option()){
 			case 1: 
@@ -120,11 +122,15 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 				}
 			}
 			if (std::chrono::duration_cast<std::chrono::seconds>
-				(Clock::now() - start).count() > stopTime && stopTime > 0)
+				(Clock::now() - start).count() >= stopTime)
 			{
 				exitLoop = true;
 				break;
 			}
+		}
+		if(exitLoop)
+		{
+			break;
 		}
 		const auto swapsRatio = static_cast<double>(swapsAccepted) / swapsTried;
 		if(prevCurrentCost == currentResult.cost)
@@ -138,7 +144,7 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 
 		currentTemp *= coolingTemp;
 
-		if(diverse && (noIterationChange >= 10 || swapsRatio < minTemp))
+		if(diverse && (noIterationChange >= 10 || swapsRatio < minTemp || currentTemp < minTemp))
 		{
 			if(prevBestCost != finalResult.cost)
 			{
@@ -154,7 +160,8 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 
 				startingTemp *= 100;
 				currentTemp = startingTemp;
-				iterations *= 10;
+				maxSwaps *= 10;
+				maxAcceptedSwaps *= 10;
 			}
 		}
 	}
