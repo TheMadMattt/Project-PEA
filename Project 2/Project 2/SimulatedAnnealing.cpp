@@ -67,19 +67,19 @@ void SimulatedAnnealing::set_iterations(int iterations)
 result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 {
 	std::default_random_engine generator;
-	std::uniform_real_distribution<double> distribution(0.0, 1.0);
+	std::uniform_real_distribution<double> distribution(0.0, 1.0); //losowanie liczb z przedzialu <0;1.0>
 	bool exitLoop = false;
-	int maxSwaps = 2000;
-	int maxAcceptedSwaps = 1000;
+	int maxSwaps = 2000; //ilosc maksymalnych zamian
+	int maxAcceptedSwaps = 1000; //ilosc maksymalnych zaakceptowanych zamian
 	int noIterationChange = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 	switch (this->choose_starting_option())
 	{
 	case 1:
-		startingSolutionGreedy();
+		startingSolutionGreedy(); //rozwiazanie startowe -> zachlanne
 		break;
 	case 2:
-		startingSolutionRand();
+		startingSolutionRand(); //rozwiazanie startowe -> losowe
 		break;
 	default: startingSolutionRand();
 	}
@@ -96,19 +96,20 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 		{
 			switch(this->choose_random_option()){
 			case 1: 
-				randomSwap();
+				randomSwap(); // losowa zamiana wierzcholkow miejscami
 				break;
 			case 2:
-				randomInsert();
+				randomInsert(); //przeniesienie losowego wierzcholka w inne losowe miejsce
 				break;
 			case 3:
-				randomReverse();
+				randomReverse(); //losowany jest przedzial, wierzcholki z tego przedzialu sa zamienianie miejscami
 				break;
 			default: randomSwap();
 			}
 			swapsTried++;
-			currentResult.cost = calculatePathCost(currentResult.path);
-			if(currentResult.cost < bestResult.cost || distribution(generator) < probability())
+			currentResult.cost = calculatePathCost(currentResult.path); //obliczenie kosztu aktualnej sciezki
+			if(currentResult.cost < bestResult.cost || distribution(generator) < probability()) //sprawdzenie czy koszt aktualny jest 
+				//mniejszy niz najlepszy lub czy wylosowana liczba jest mniejsza niz prawdopodobienstwo (wzor)
 			{
 				swapsAccepted++;
 				bestResult = currentResult;
@@ -116,13 +117,13 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 				{
 					bestResult.bestSolutionTime = std::chrono::duration_cast<std::chrono::microseconds>
 						(Clock::now() - start).count();
-					bestResult.finalTemp = currentTemp;
-					finalResult = bestResult;
+					bestResult.finalTemp = currentTemp; 
+					finalResult = bestResult; //zaktualizowanie najlepszego kosztu sciezki (dotychczas znalezionego)
 
 				}
 			}
 			if (std::chrono::duration_cast<std::chrono::seconds>
-				(Clock::now() - start).count() >= stopTime)
+				(Clock::now() - start).count() >= stopTime) //zakonczenie algorytmu jezeli czas dzialania jest wiekszy niz zadany
 			{
 				exitLoop = true;
 				break;
@@ -133,7 +134,7 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 			break;
 		}
 		const auto swapsRatio = static_cast<double>(swapsAccepted) / swapsTried;
-		if(prevCurrentCost == currentResult.cost)
+		if(prevCurrentCost == currentResult.cost) //jezeli brak zmian w kolejnych iteracjach
 		{
 			noIterationChange++;
 		}else
@@ -145,15 +146,16 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 		currentTemp *= coolingTemp;
 
 		if(diverse && (noIterationChange >= 10 || swapsRatio < minTemp || currentTemp < minTemp))
+			//poprawienie wyszukiwania najlepszego rozwiazania
 		{
-			if(prevBestCost != finalResult.cost)
+			if(prevBestCost != finalResult.cost) //restart algorytmu
 			{
 				std::cout << "Reached local minimum - starting over from best path (best " << finalResult.cost << ")\n";
 				currentResult = finalResult;
 				prevBestCost = finalResult.cost;
 
 				currentTemp = startingTemp;
-			}else
+			}else //polepszenie parametrow wyszukiwania
 			{
 				std::cout << "Best path doesn't improve - starting over from best path and increasing temperature (best " << finalResult.cost << ")\n";
 				currentResult = finalResult;
@@ -168,7 +170,7 @@ result SimulatedAnnealing::find_solution(int stopTime, bool diverse)
 	return finalResult;
 }
 
-double SimulatedAnnealing::probability() const
+double SimulatedAnnealing::probability() const //obliczenie funkcji P ze wzoru
 {
 	const double power = -((currentResult.cost - bestResult.cost) / currentTemp);
 	return exp(power);
@@ -186,7 +188,7 @@ std::vector<int> SimulatedAnnealing::getUnvisited(std::vector<int> path)
 		if (!visited[i])
 			unvisited.push_back(i);
 
-	return unvisited;
+	return unvisited; //zwrocenie nieodwiedzonych wierzcholkow
 }
 
 void SimulatedAnnealing::startingSolutionGreedy()
@@ -196,6 +198,7 @@ void SimulatedAnnealing::startingSolutionGreedy()
 
 	currentResult.path.resize(1, 0);
 	auto v = 0;
+	//znalezienie poczatkowego rozwiazania metoda zachlanna
 	while (currentResult.path.size() < static_cast<unsigned>(matrix.size()))
 	{
 		auto current_best = INT_MAX;
@@ -224,7 +227,7 @@ void SimulatedAnnealing::startingSolutionRand()
 	currentResult.cost = 0;
 
 	currentResult.path.resize(matrix.size() + 1);
-
+	//znalezienie poczatkowego rozwiazania metoda losowa
 	for(int i=0; i < matrix.size(); i++)
 	{
 		currentResult.path[i] = i;
@@ -239,6 +242,7 @@ void SimulatedAnnealing::startingSolutionRand()
 
 void SimulatedAnnealing::randomSwap()
 {
+	//losowa zamiana miejscami dwoch wierzcholkow
 	const int cityNumber = bestResult.path.size();
 	int cityA = std::rand() % (cityNumber - 2) + 1;
 	int cityB = std::rand() % (cityNumber - 2) + 1;
@@ -253,6 +257,7 @@ void SimulatedAnnealing::randomSwap()
 
 void SimulatedAnnealing::randomInsert()
 {
+	//przeniesienie losowego wierzcholka w inne losowe miejsce
 	const int cityNumber = bestResult.path.size();
 	int a = rand() % (cityNumber - 2) + 1;
 	int b = rand() % (cityNumber - 2) + 1;
@@ -271,6 +276,8 @@ void SimulatedAnnealing::randomInsert()
 
 void SimulatedAnnealing::randomReverse()
 {
+	//losowe zamienienie miejscami miast z wylosowanego przedzialu
+
 	const int cityNumber = bestResult.path.size();
 	int a = rand() % (cityNumber - 2) + 1;
 	int b = rand() % (cityNumber - 2) + 1;
@@ -292,6 +299,7 @@ void SimulatedAnnealing::randomReverse()
 
 int SimulatedAnnealing::calculatePathCost(std::vector<int> path)
 {
+	//obliczenie kosztu zadanej sciezki
 	double pathCost = 0;
 	for (int i = 0; i < path.size()-1; i++)
 	{

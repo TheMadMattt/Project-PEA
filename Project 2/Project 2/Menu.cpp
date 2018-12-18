@@ -149,6 +149,11 @@ void Menu::ChooseOptionMenu()
 		system("cls");
 		simulatedAnnealing = SimulatedAnnealing(coolTemp, finalTemp, graph.getMatrix(), stopTime, randOption, startOption);
 		if (simulatedAnnealing.getCurrentTemp() > 0 || simulatedAnnealing.getCoolingTemp() > 0 || simulatedAnnealing.getMinTemp() > 0) {
+			if(stopTime == 0)
+			{
+				stopTime = 60;
+				simulatedAnnealing.set_stop_time(stopTime);
+			}
 			result = simulatedAnnealing.find_solution(simulatedAnnealing.stop_time(), diverse);
 			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
 			cout << "Temperatura w trakcie znalezienia najlepszego rozwiazania: " << result.finalTemp << endl;

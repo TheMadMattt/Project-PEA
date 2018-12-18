@@ -5,6 +5,11 @@
 #include <iomanip>
 #include <utility>
 
+//Konwerter dla plikow .atsp
+
+//autor: Antoni Sterna
+
+//www: http://staff.iiar.pwr.wroc.pl/antoni.sterna/pea/PEA_testy.htm
 
 Converter::Converter() = default;
 

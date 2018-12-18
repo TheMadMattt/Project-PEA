@@ -3,9 +3,9 @@
 class Algorithm
 {
 private:
-	double stopTime;
-	int chooseRandomOption;
-	int chooseStartingOption;
+	double stopTime; //kryterium stopu
+	int chooseRandomOption; //wybranie metody zamiany miejsc
+	int chooseStartingOption; //wybranie poczatkowego rozwiazania
 public:
 	Algorithm();
 
