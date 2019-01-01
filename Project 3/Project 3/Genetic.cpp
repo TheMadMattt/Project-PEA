@@ -1,6 +1,7 @@
 #include "Genetic.h"
 #include <random>
 #include <strstream>
+#include <iostream>
 
 
 Genetic::Genetic():mutationRatio(-1), populationSize(-1)

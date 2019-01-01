@@ -25,7 +25,19 @@ void Menu::ChooseOptionMenu()
 	cout << "[2] Losuj macierz" << endl;
 	cout << "[3] Wyswietl wczytane dane" << endl;
 	cout << "[4] Wybierz kryterium stopu: " << stopTime<< endl;
-	cout << "[5] Wybierz rozwiazywnaie algorytmu" << endl;
+	cout << "[5] Wybierz rozwiazywnaie algorytmu";
+	if (mutationChoice == -1)
+	{
+		cout << endl;
+	}
+	else if (mutationChoice == 1)
+	{
+		cout << ": Swap" << endl;
+	}
+	else if (mutationChoice == 2)
+	{
+		cout << ": Scramble" << endl;
+	}
 	cout << "[6] Ustaw wspolczynnik mutacji: " << mutationRatio << endl;
 	cout << "[7] Ustaw wielkosc populacji: " << populationSize << endl;
 	cout << "[8] Genetic algorithm" << endl;
