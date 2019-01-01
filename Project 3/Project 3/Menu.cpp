@@ -1,11 +1,12 @@
 #include "Menu.h"
 #include <iostream>
+#include <random>
 #include <string>
 
 using namespace std;
 
-double mutationRatio;
-int stopTime, mutationChoice;
+double mutationRatio = -1;
+int stopTime = -1, mutationChoice = -1, populationSize = -1;
 string filename;
 
 Menu::Menu() : option(NULL)
@@ -23,9 +24,11 @@ void Menu::ChooseOptionMenu()
 	cout << "[1] Wczytaj dane z pliku" << endl;
 	cout << "[2] Losuj macierz" << endl;
 	cout << "[3] Wyswietl wczytane dane" << endl;
-	cout << "[4] Wybierz kryterium stopu: " << endl;
+	cout << "[4] Wybierz kryterium stopu: " << stopTime<< endl;
 	cout << "[5] Wybierz rozwiazywnaie algorytmu" << endl;
-	cout << "[6] Genetic algorithm" << endl;
+	cout << "[6] Ustaw wspolczynnik mutacji: " << mutationRatio << endl;
+	cout << "[7] Ustaw wielkosc populacji: " << populationSize << endl;
+	cout << "[8] Genetic algorithm" << endl;
 	cout << "[0] Wyjscie" << endl;
 	cout << "Wybierz zadanie do uruchomienia: ";
 
@@ -74,24 +77,44 @@ void Menu::ChooseOptionMenu()
 		break;
 	case 5:
 		system("cls");
-		//TODO
+		cout << "[1] Swap" << endl;
+		cout << "[2] Scramble" << endl;
+		cout << "Wybierz sposob rozwiazywania algorytmu: " << endl;
+		cin >> mutationChoice;
 		system("pause");
 		ChooseOptionMenu();
 		break;
 	case 6:
 		system("cls");
-		genetic = Genetic(stopTime,mutationChoice, mutationRatio, graph.getMatrix());
-		if (genetic.getMutationRatio() > 0) {
+		cout << "Wpisz wspolczynnik mutacji: ";
+		cin >> mutationRatio;
+		system("pause");
+		ChooseOptionMenu();
+		break;
+	case 7:
+		system("cls");
+		cout << "Wpisz wielkosc populacji: ";
+		cin >> populationSize;
+		system("pause");
+		ChooseOptionMenu();
+		break;
+	case 8:
+		system("cls");
+		genetic = Genetic(stopTime,mutationChoice, mutationRatio, populationSize, graph.getMatrix());
+		if (genetic.getMutationRatio() > 0 && genetic.getPopulationSize() > 0) {
 			if(stopTime <= 0)
 			{
 				stopTime = 60;
 				genetic.set_stop_time(stopTime);
 			}
-			//TODO
+			result = genetic.findSolution(genetic.stop_time());
+			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
+			cout << "Koszt sciezki: " << result.cost << endl;
+			printPath(result.path);
 		}
 		else
 		{
-			cout << "Ustaw wspolczynnik mutacji" << endl;
+			cout << "Ustaw wspolczynnik mutacji oraz wielkosc populacji" << endl;
 		}
 		system("pause");
 		ChooseOptionMenu();

@@ -3,7 +3,7 @@
 class Algorithm
 {
 private:
-	double stopTime; //kryterium stopu
+	int stopTime; //kryterium stopu
 	int mutationChoice;
 public:
 	Algorithm();
@@ -12,7 +12,10 @@ public:
 
 	~Algorithm();
 
-	double stop_time() const;
+	int stop_time() const;
 	void set_stop_time(double stop_time);
+
+	int getMutationChoice() const;
+	void set_mutation_choice(int mutation_choice);
 };
 

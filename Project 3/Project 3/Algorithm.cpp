@@ -12,7 +12,7 @@ Algorithm::Algorithm(double stop_time, int mutation_choice):stopTime(stop_time),
 Algorithm::~Algorithm()
 = default;
 
-double Algorithm::stop_time() const
+int Algorithm::stop_time() const
 {
 	return stopTime;
 }
@@ -20,4 +20,14 @@ double Algorithm::stop_time() const
 void Algorithm::set_stop_time(double stop_time)
 {
 	stopTime = stop_time;
+}
+
+int Algorithm::getMutationChoice() const
+{
+	return mutationChoice;
+}
+
+void Algorithm::set_mutation_choice(int mutation_choice)
+{
+	mutationChoice = mutation_choice;
 }
