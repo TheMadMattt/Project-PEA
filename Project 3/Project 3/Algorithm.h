@@ -8,7 +8,7 @@ private:
 public:
 	Algorithm();
 
-	Algorithm(double stop_time, int mutation_choice);
+	Algorithm(int stop_time, int mutation_choice);
 
 	~Algorithm();
 

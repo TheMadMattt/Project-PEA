@@ -5,8 +5,8 @@
 
 using namespace std;
 
-double mutationRatio = -1;
-int stopTime = -1, mutationChoice = -1, populationSize = -1;
+double mutationRatio = -1, crossingRatio = -1;
+int stopTime = 60, mutationChoice = -1, populationSize = -1;
 string filename;
 
 Menu::Menu() : option(NULL)
@@ -24,8 +24,8 @@ void Menu::ChooseOptionMenu()
 	cout << "[1] Wczytaj dane z pliku" << endl;
 	cout << "[2] Losuj macierz" << endl;
 	cout << "[3] Wyswietl wczytane dane" << endl;
-	cout << "[4] Wybierz kryterium stopu: " << stopTime<< endl;
-	cout << "[5] Wybierz rozwiazywnaie algorytmu";
+	cout << "[4] Wybierz kryterium stopu: " << stopTime << endl;
+	cout << "[5] Wybierz rozwiazywnaie algorytmu mutacji";
 	if (mutationChoice == -1)
 	{
 		cout << endl;
@@ -39,8 +39,10 @@ void Menu::ChooseOptionMenu()
 		cout << ": Scramble" << endl;
 	}
 	cout << "[6] Ustaw wspolczynnik mutacji: " << mutationRatio << endl;
-	cout << "[7] Ustaw wielkosc populacji: " << populationSize << endl;
-	cout << "[8] Genetic mutation algorithm" << endl;
+	cout << "[7] Ustaw wspolczynnik krzyzowania: " << crossingRatio << endl;
+	cout << "[8] Ustaw wielkosc populacji: " << populationSize << endl;
+	cout << "[9] Genetic mutation algorithm" << endl;
+	cout << "[10] Genetic crossing algorithm" << endl;
 	cout << "[0] Wyjscie" << endl;
 	cout << "Wybierz zadanie do uruchomienia: ";
 
@@ -105,21 +107,49 @@ void Menu::ChooseOptionMenu()
 		break;
 	case 7:
 		system("cls");
-		cout << "Wpisz wielkosc populacji: ";
-		cin >> populationSize;
+		cout << "Wpisz wspolczynnik krzyzowania: ";
+		cin >> crossingRatio;
 		system("pause");
 		ChooseOptionMenu();
 		break;
 	case 8:
 		system("cls");
-		genetic = Genetic(stopTime,mutationChoice, mutationRatio, populationSize, graph.getMatrix());
+		cout << "Wpisz wielkosc populacji: ";
+		cin >> populationSize;
+		system("pause");
+		ChooseOptionMenu();
+		break;
+	case 9:
+		system("cls");
+		genetic = Genetic(stopTime, mutationChoice, mutationRatio, crossingRatio, populationSize, graph.getMatrix());
 		if (genetic.getMutationRatio() > 0 && genetic.getPopulationSize() > 0) {
-			if(stopTime <= 0)
+			if (stopTime <= 0)
 			{
 				stopTime = 60;
 				genetic.set_stop_time(stopTime);
 			}
-			result = genetic.mutate(genetic.stop_time());
+			result = genetic.mutationAlgorithm(genetic.stop_time());
+			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
+			cout << "Koszt sciezki: " << result.cost << endl;
+			printPath(result.path);
+		}
+		else
+		{
+			cout << "Ustaw wspolczynnik mutacji oraz wielkosc populacji" << endl;
+		}
+		system("pause");
+		ChooseOptionMenu();
+		break;
+	case 10:
+		system("cls");
+		genetic = Genetic(stopTime, mutationChoice, mutationRatio, crossingRatio, populationSize, graph.getMatrix());
+		if (genetic.getCrossingRatio() > 0 && genetic.getPopulationSize() > 0) {
+			if (stopTime <= 0)
+			{
+				stopTime = 60;
+				genetic.set_stop_time(stopTime);
+			}
+			result = genetic.crossingAlgorithm(genetic.stop_time());
 			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
 			cout << "Koszt sciezki: " << result.cost << endl;
 			printPath(result.path);

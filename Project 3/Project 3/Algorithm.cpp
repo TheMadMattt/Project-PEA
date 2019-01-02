@@ -5,9 +5,10 @@ Algorithm::Algorithm(): stopTime(-1), mutationChoice(-1)
 {
 }
 
-Algorithm::Algorithm(double stop_time, int mutation_choice):stopTime(stop_time), mutationChoice(mutation_choice)
+Algorithm::Algorithm(int stop_time, int mutation_choice):stopTime(stop_time), mutationChoice(mutation_choice)
 {
 }
+
 
 Algorithm::~Algorithm()
 = default;
