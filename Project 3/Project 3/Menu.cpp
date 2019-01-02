@@ -40,7 +40,7 @@ void Menu::ChooseOptionMenu()
 	}
 	cout << "[6] Ustaw wspolczynnik mutacji: " << mutationRatio << endl;
 	cout << "[7] Ustaw wielkosc populacji: " << populationSize << endl;
-	cout << "[8] Genetic algorithm" << endl;
+	cout << "[8] Genetic mutation algorithm" << endl;
 	cout << "[0] Wyjscie" << endl;
 	cout << "Wybierz zadanie do uruchomienia: ";
 
@@ -119,7 +119,7 @@ void Menu::ChooseOptionMenu()
 				stopTime = 60;
 				genetic.set_stop_time(stopTime);
 			}
-			result = genetic.findSolution(genetic.stop_time());
+			result = genetic.mutate(genetic.stop_time());
 			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
 			cout << "Koszt sciezki: " << result.cost << endl;
 			printPath(result.path);

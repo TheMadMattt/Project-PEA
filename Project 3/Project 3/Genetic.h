@@ -41,7 +41,9 @@ public:
 	std::priority_queue<result, std::vector<result>, compareCost> createPopulation();
 	result swap(int stopTime);
 	result scramble(int stopTime);
-	result findSolution(int stopTime);
+	result mutate(int stopTime);
+
+	//result crossover(int stopTime);
 
 	int calculateCost(std::vector<int> path);
 

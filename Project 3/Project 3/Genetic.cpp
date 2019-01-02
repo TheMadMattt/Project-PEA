@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-Genetic::Genetic():mutationRatio(-1), populationSize(-1)
+Genetic::Genetic() :mutationRatio(-1), populationSize(-1)
 {
 }
 
@@ -31,8 +31,8 @@ std::priority_queue<result, std::vector<result>, compareCost> Genetic::createPop
 		{
 			population.path.push_back(y);
 		}
-		std::shuffle(population.path.begin(), population.path.end(), std::mt19937(std::random_device()()));
 		population.path.push_back(population.path[0]);
+		std::shuffle(population.path.begin() + 1, population.path.end() - 1, std::mt19937(std::random_device()()));
 
 		population.cost = calculateCost(population.path);
 
@@ -50,7 +50,7 @@ result Genetic::swap(int stopTime)
 	bool exitLoop = false;
 	bestResult = pq.top();
 
-	auto start = std::chrono::high_resolution_clock::now();
+	const auto start = std::chrono::high_resolution_clock::now();
 	while (!exitLoop) {
 		result population = pq.top();
 		pq.pop();
@@ -71,7 +71,7 @@ result Genetic::swap(int stopTime)
 
 		pq.push(population);
 
-		if(population.cost < bestResult.cost)
+		if (population.cost < bestResult.cost)
 		{
 			bestResult = population;
 			bestResult.bestSolutionTime = std::chrono::duration_cast<std::chrono::microseconds>
@@ -82,7 +82,6 @@ result Genetic::swap(int stopTime)
 			(Clock::now() - start).count() >= stopTime) //zakonczenie algorytmu jezeli czas dzialania jest wiekszy niz zadany
 		{
 			exitLoop = true;
-			break;
 		}
 	}
 
@@ -91,15 +90,62 @@ result Genetic::swap(int stopTime)
 
 result Genetic::scramble(int stopTime)
 {
+	std::default_random_engine generator;
+	std::uniform_real_distribution<double> distribution(0.0, 1.0); //losowanie liczb z przedzialu <0;1.0>
+	std::priority_queue<result, std::vector<result>, compareCost> pq = createPopulation();
+	bool exitLoop = false;
+	bestResult = pq.top();
 
+	const auto start = std::chrono::high_resolution_clock::now();
+	while (!exitLoop)
+	{
+		result population = pq.top();
+		pq.pop();
 
+		const int cityNumber = population.path.size();
+		int a = rand() % (cityNumber - 2) + 1;
+		int b = rand() % (cityNumber - 2) + 1;
+
+		while (a == b)
+			b = rand() % (cityNumber - 2) + 1;
+
+		if (distribution(generator) < mutationRatio)
+		{
+			if (a < b) {
+				std::shuffle(population.path.begin() + a, population.path.begin() + b,
+				             std::mt19937(std::random_device()()));
+			}
+			else
+			{
+				std::shuffle(population.path.begin() + b, population.path.begin() + a,
+				             std::mt19937(std::random_device()()));
+			}
+		}
+
+		population.cost = calculateCost(population.path);
+
+		pq.push(population);
+
+		if (population.cost < bestResult.cost)
+		{
+			bestResult = population;
+			bestResult.bestSolutionTime = std::chrono::duration_cast<std::chrono::microseconds>
+				(Clock::now() - start).count();
+		}
+
+		if (std::chrono::duration_cast<std::chrono::seconds>
+			(Clock::now() - start).count() >= stopTime) //zakonczenie algorytmu jezeli czas dzialania jest wiekszy niz zadany
+		{
+			exitLoop = true;
+		}
+	}
 
 	return bestResult;
 }
 
-result Genetic::findSolution(int stopTime)
+result Genetic::mutate(int stopTime)
 {
-	switch(getMutationChoice())
+	switch (getMutationChoice())
 	{
 	case 1:
 		bestResult = swap(stopTime);
@@ -114,6 +160,21 @@ result Genetic::findSolution(int stopTime)
 
 	return bestResult;
 }
+
+/*result Genetic::crossover(int stopTime)
+{
+	std::default_random_engine generator;
+	std::uniform_real_distribution<double> distribution(0.0, 1.0); //losowanie liczb z przedzialu <0;1.0>
+	std::priority_queue<result, std::vector<result>, compareCost> pq = createPopulation();
+	bool exitLoop = false;
+	bestResult = pq.top();
+
+	const auto start = std::chrono::high_resolution_clock::now();
+	while (!exitLoop)
+
+
+	return bestResult;
+}*/
 
 int Genetic::calculateCost(std::vector<int> path)
 {
