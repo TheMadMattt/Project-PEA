@@ -171,9 +171,10 @@ result Genetic::mutationAlgorithm(int stopTime)
 
 result Genetic::cross(const std::vector<int>& parent1, std::vector<int> parent2)
 {
-	result child;
+	result child1, child2;
 
-	child.path.resize(parent1.size());
+	child1.path.resize(parent1.size());
+	child2.path.resize(parent2.size());
 
 	const int cityNumber = parent1.size();
 	int a = rand() % (cityNumber - 2) + 1;
@@ -189,24 +190,34 @@ result Genetic::cross(const std::vector<int>& parent1, std::vector<int> parent2)
 		a = temp;
 	}
 
-	child.path = parent1;
+	child1.path = parent1;
+	child2.path = parent2;
 
 	for (int i = a; i < b; i++)
 	{
-		child.path[i] = parent2[i];
+		int temp = child1.path[i];
+		child1.path[i] = child2.path[i];
+		child2.path[i] = temp;
 	}
 
 	for (int i = a; i < b; i++)
 	{
 		for (int y = 0; y < a; y++)
 		{
-			if (child.path[i] == child.path[y]) child.path[y] = parent2[i];
+			if (child1.path[y] == child1.path[i]) child1.path[y] = child2.path[i];
+			if (child2.path[y] == child2.path[i]) child2.path[y] = child1.path[i];
 		}
 	}
 
-	child.cost = calculateCost(child.path);
+	child1.cost = calculateCost(child1.path);
+	child2.cost = calculateCost(child2.path);
 
-	return child;
+	if(child1.cost < child2.cost)
+	{
+		return child1;
+	}
+
+	return child2;
 }
 
 result Genetic::crossingAlgorithm(int stopTime)
