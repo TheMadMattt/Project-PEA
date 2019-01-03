@@ -52,6 +52,7 @@ public:
 	std::vector<result> createPopulation();
 	result swap(int stopTime);
 	result scramble(int stopTime);
+	result inversion(int stopTime);
 	result mutationAlgorithm(int stopTime);
 
 	result cross(const std::vector<int>& parent1, std::vector<int> parent2);

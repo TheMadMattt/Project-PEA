@@ -29,8 +29,8 @@ std::vector<result> Genetic::createPopulation()
 		{
 			population.path.push_back(y);
 		}
+		std::shuffle(population.path.begin(), population.path.end(), std::mt19937(std::random_device()()));
 		population.path.push_back(population.path[0]);
-		std::shuffle(population.path.begin() + 1, population.path.end() - 1, std::mt19937(std::random_device()()));
 
 		population.cost = calculateCost(population.path);
 
@@ -151,6 +151,65 @@ result Genetic::scramble(int stopTime)
 	return bestResult;
 }
 
+result Genetic::inversion(int stopTime)
+{
+	std::default_random_engine generator;
+	std::uniform_real_distribution<double> distribution(0.0, 1.0); //losowanie liczb z przedzialu <0;1.0>
+	std::vector<result> popVec = createPopulation();
+	queue pq;
+	for (int i = 0; i < popVec.size(); i++)
+	{
+		pq.push(popVec.at(i));
+	}
+	bool exitLoop = false;
+	bestResult = pq.top();
+
+	const auto start = std::chrono::high_resolution_clock::now();
+	while (!exitLoop)
+	{
+		result population = pq.top();
+		pq.pop();
+
+		const int cityNumber = population.path.size();
+		int a = rand() % (cityNumber - 2) + 1;
+		int b = rand() % (cityNumber - 2) + 1;
+
+		while (a == b)
+			b = rand() % (cityNumber - 2) + 1;
+
+		if (a > b)
+		{
+			const int temp = b;
+			b = a;
+			a = temp;
+		}
+
+		if (distribution(generator) < mutationRatio)
+		{
+			std::reverse(population.path.begin()+a,population.path.begin()+b);
+		}
+
+		population.cost = calculateCost(population.path);
+
+		pq.push(population);
+
+		if (population.cost < bestResult.cost)
+		{
+			bestResult = population;
+			bestResult.bestSolutionTime = std::chrono::duration_cast<std::chrono::microseconds>
+				(Clock::now() - start).count();
+		}
+
+		if (std::chrono::duration_cast<std::chrono::seconds>
+			(Clock::now() - start).count() >= stopTime) //zakonczenie algorytmu jezeli czas dzialania jest wiekszy niz zadany
+		{
+			exitLoop = true;
+		}
+	}
+
+	return bestResult;
+}
+
 result Genetic::mutationAlgorithm(int stopTime)
 {
 	switch (getMutationChoice())
@@ -160,6 +219,9 @@ result Genetic::mutationAlgorithm(int stopTime)
 		break;
 	case 2:
 		bestResult = scramble(stopTime);
+		break;
+	case 3:
+		bestResult = inversion(stopTime);
 		break;
 	default:
 		bestResult = swap(stopTime);

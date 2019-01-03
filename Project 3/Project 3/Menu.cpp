@@ -5,8 +5,8 @@
 
 using namespace std;
 
-double mutationRatio = -1, crossingRatio = -1;
-int stopTime = 60, mutationChoice = -1, populationSize = -1;
+double mutationRatio = 0.01, crossingRatio = 0.8;
+int stopTime = 60, mutationChoice = 1, populationSize = 10;
 string filename;
 
 Menu::Menu() : option(NULL)
@@ -26,17 +26,17 @@ void Menu::ChooseOptionMenu()
 	cout << "[3] Wyswietl wczytane dane" << endl;
 	cout << "[4] Wybierz kryterium stopu: " << stopTime << endl;
 	cout << "[5] Wybierz rozwiazywnaie algorytmu mutacji";
-	if (mutationChoice == -1)
-	{
-		cout << endl;
-	}
-	else if (mutationChoice == 1)
+	if (mutationChoice == 1)
 	{
 		cout << ": Swap" << endl;
 	}
 	else if (mutationChoice == 2)
 	{
 		cout << ": Scramble" << endl;
+	}
+	else if (mutationChoice == 3)
+	{
+		cout << ": Inverse" << endl;
 	}
 	cout << "[6] Ustaw wspolczynnik mutacji: " << mutationRatio << endl;
 	cout << "[7] Ustaw wspolczynnik krzyzowania: " << crossingRatio << endl;
@@ -93,6 +93,7 @@ void Menu::ChooseOptionMenu()
 		system("cls");
 		cout << "[1] Swap" << endl;
 		cout << "[2] Scramble" << endl;
+		cout << "[3] Inverse" << endl;
 		cout << "Wybierz sposob rozwiazywania algorytmu: " << endl;
 		cin >> mutationChoice;
 		system("pause");
