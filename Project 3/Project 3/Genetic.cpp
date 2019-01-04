@@ -68,9 +68,8 @@ result Genetic::swap(int stopTime)
 		if (distribution(generator) < mutationRatio)
 		{
 			std::swap(population.path.at(a), population.path.at(b));
+			population.cost = calculateCost(population.path);
 		}
-
-		population.cost = calculateCost(population.path);
 
 		pq.push(population);
 
@@ -128,9 +127,10 @@ result Genetic::scramble(int stopTime)
 		{
 			std::shuffle(population.path.begin() + a, population.path.begin() + b,
 				std::mt19937(std::random_device()()));
+			population.cost = calculateCost(population.path);
 		}
 
-		population.cost = calculateCost(population.path);
+
 
 		pq.push(population);
 
@@ -186,10 +186,9 @@ result Genetic::inversion(int stopTime)
 
 		if (distribution(generator) < mutationRatio)
 		{
-			std::reverse(population.path.begin()+a,population.path.begin()+b);
+			std::reverse(population.path.begin() + a, population.path.begin() + b);
+			population.cost = calculateCost(population.path);
 		}
-
-		population.cost = calculateCost(population.path);
 
 		pq.push(population);
 
@@ -274,7 +273,7 @@ result Genetic::cross(const std::vector<int>& parent1, std::vector<int> parent2)
 	child1.cost = calculateCost(child1.path);
 	child2.cost = calculateCost(child2.path);
 
-	if(child1.cost < child2.cost)
+	if (child1.cost < child2.cost)
 	{
 		return child1;
 	}
@@ -293,8 +292,8 @@ result Genetic::crossingAlgorithm(int stopTime)
 	const auto start = std::chrono::high_resolution_clock::now();
 	while (!exitLoop)
 	{
-		result parent1 = popVec.at(rand()%populationSize);
-		result parent2 = popVec.at(rand()%populationSize);
+		result parent1 = popVec.at(rand() % populationSize);
+		result parent2 = popVec.at(rand() % populationSize);
 
 		if (distribution(generator) < crossingRatio)
 		{
