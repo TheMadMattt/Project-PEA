@@ -41,8 +41,7 @@ void Menu::ChooseOptionMenu()
 	cout << "[6] Ustaw wspolczynnik mutacji: " << mutationRatio << endl;
 	cout << "[7] Ustaw wspolczynnik krzyzowania: " << crossingRatio << endl;
 	cout << "[8] Ustaw wielkosc populacji: " << populationSize << endl;
-	cout << "[9] Genetic mutation algorithm" << endl;
-	cout << "[10] Genetic crossing algorithm" << endl;
+	cout << "[9] Genetic algorithm" << endl;
 	cout << "[0] Wyjscie" << endl;
 	cout << "Wybierz zadanie do uruchomienia: ";
 
@@ -123,34 +122,13 @@ void Menu::ChooseOptionMenu()
 	case 9:
 		system("cls");
 		genetic = Genetic(stopTime, mutationChoice, mutationRatio, crossingRatio, populationSize, graph.getMatrix());
-		if (genetic.getMutationRatio() > 0 && genetic.getPopulationSize() > 0) {
+		if (genetic.getMutationRatio() > 0 && genetic.getPopulationSize() > 0 && genetic.getCrossingRatio() > 0) {
 			if (stopTime <= 0)
 			{
 				stopTime = 60;
 				genetic.set_stop_time(stopTime);
 			}
-			result = genetic.mutationAlgorithm(genetic.stop_time());
-			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
-			cout << "Koszt sciezki: " << result.cost << endl;
-			printPath(result.path);
-		}
-		else
-		{
-			cout << "Ustaw wspolczynnik mutacji oraz wielkosc populacji" << endl;
-		}
-		system("pause");
-		ChooseOptionMenu();
-		break;
-	case 10:
-		system("cls");
-		genetic = Genetic(stopTime, mutationChoice, mutationRatio, crossingRatio, populationSize, graph.getMatrix());
-		if (genetic.getCrossingRatio() > 0 && genetic.getPopulationSize() > 0) {
-			if (stopTime <= 0)
-			{
-				stopTime = 60;
-				genetic.set_stop_time(stopTime);
-			}
-			result = genetic.crossingAlgorithm(genetic.stop_time());
+			result = genetic.findSolution(genetic.stop_time());
 			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
 			cout << "Koszt sciezki: " << result.cost << endl;
 			printPath(result.path);

@@ -13,15 +13,7 @@ struct result
 	double bestSolutionTime = 0;
 };
 
-struct compareCostMutation	//struktura pozwalajaca na wybranie najmniejszego kosztu wierzcholka (potrzebne w kolejce priorytetowej)
-{
-	bool operator()(const result& l, const result& r) const
-	{
-		return l.cost > r.cost;
-	}
-};
-
-struct compareCostCrossing	//struktura pozwalajaca na wybranie najmniejszego kosztu wierzcholka (potrzebne w kolejce priorytetowej)
+struct compareCost	//struktura pozwalajaca na wybranie najmniejszego kosztu wierzcholka (potrzebne w kolejce priorytetowej)
 {
 	bool operator()(const result& l, const result& r) const
 	{
@@ -29,13 +21,11 @@ struct compareCostCrossing	//struktura pozwalajaca na wybranie najmniejszego kos
 	}
 };
 
-typedef std::priority_queue<result, std::vector<result>, compareCostMutation> queue;
-
 class Genetic : public Algorithm
 {
 private:
 	double mutationRatio;
-	double crossingRatio;
+	double crossingRatio{};
 	int populationSize;
 
 	std::vector<std::vector<int>> matrix;
@@ -50,13 +40,13 @@ public:
 	~Genetic();
 
 	std::vector<result> createPopulation();
-	result swap(int stopTime);
-	result scramble(int stopTime);
-	result inversion(int stopTime);
-	result mutationAlgorithm(int stopTime);
+	result swap(result subject);
+	result scramble(result subject);
+	result inversion(result subject);
 
-	result cross(const std::vector<int>& parent1, std::vector<int> parent2);
-	result crossingAlgorithm(int stopTime);
+	result cross(const std::vector<int>& parent1, const std::vector<int>& parent2);
+
+	result findSolution(int stopTime);
 
 	int calculateCost(std::vector<int> path);
 
