@@ -94,6 +94,7 @@ result Genetic::inversion(result subject)
 	}
 
 	std::reverse(subject.path.begin() + a, subject.path.begin() + b);
+
 	subject.cost = calculateCost(subject.path);
 
 	return subject;
@@ -111,37 +112,61 @@ result Genetic::findSolution(int stopTime)
 	const auto start = std::chrono::high_resolution_clock::now();
 	while (!exitLoop) {
 
-		if (distribution(generator) < crossingRatio)
-		{
-			result parent1 = popVec.at(rand() % popVec.size());
-			result parent2 = popVec.at(rand() % popVec.size());
+		int iteration = popVec.size();
 
-			result child = cross(parent1.path, parent2.path);
-			popVec.push_back(child);
+		for (int i = 0; i < iteration; i++)
+		{
+			if (distribution(generator) < crossingRatio)
+			{
+				result child = cross(popVec.at(rand() % popVec.size()).path, popVec.at(rand() % popVec.size()).path);
+				if (distribution(generator) < mutationRatio) {
+					switch (getMutationChoice())
+					{
+					case 1:
+						child = swap(child);
+						break;
+					case 2:
+						child = scramble(child);
+						break;
+					case 3:
+						child = inversion(child);
+						break;
+					default:
+						child = swap(child);
+						break;
+					}
+				}
+				popVec.push_back(child);
+			}
 		}
 
-		if (distribution(generator) < mutationRatio) {
-			int index = rand() % popVec.size();
-			result subject = popVec.at(index);
-			switch (getMutationChoice())
-			{
-			case 1:
-				subject = swap(subject);
-				break;
-			case 2:
-				subject = scramble(subject);
-				break;
-			case 3:
-				subject = inversion(subject);
-				break;
-			default:
-				subject = swap(subject);
-				break;
+		for (int i = 0; i < popVec.size(); i++) {
+			if (distribution(generator) < mutationRatio) {
+				int index = rand() % popVec.size();
+				switch (getMutationChoice())
+				{
+				case 1:
+					popVec.at(index) = swap(popVec.at(index));
+					break;
+				case 2:
+					popVec.at(index) = scramble(popVec.at(index));
+					break;
+				case 3:
+					popVec.at(index) = inversion(popVec.at(index));
+					break;
+				default:
+					popVec.at(index) = swap(popVec.at(index));
+					break;
+				}
 			}
-			popVec.at(index) = subject;
 		}
 
 		std::sort(popVec.begin(), popVec.end(), compareCost());
+
+		while(populationSize < popVec.size())
+		{
+			popVec.pop_back();
+		}
 
 		result newBest = popVec.at(0);
 
