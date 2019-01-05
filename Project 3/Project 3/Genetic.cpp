@@ -100,7 +100,7 @@ result Genetic::inversion(result subject)
 	return subject;
 }
 
-result Genetic::findSolution(int stopTime)
+result Genetic::find_solution(int stopTime)
 {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<double> distribution(0.0, 1.0); //losowanie liczb z przedzialu <0;1.0>

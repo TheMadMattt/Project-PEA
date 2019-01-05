@@ -128,7 +128,7 @@ void Menu::ChooseOptionMenu()
 				stopTime = 60;
 				genetic.set_stop_time(stopTime);
 			}
-			result = genetic.findSolution(genetic.stop_time());
+			result = genetic.find_solution(genetic.stop_time());
 			cout << "Czas znalezienia najnizszego kosztu sciezki: " << result.bestSolutionTime / 1000000 << " [s]" << endl;
 			cout << "Koszt sciezki: " << result.cost << endl;
 			printPath(result.path);

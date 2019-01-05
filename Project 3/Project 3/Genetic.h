@@ -46,7 +46,7 @@ public:
 
 	result cross(const std::vector<int>& parent1, const std::vector<int>& parent2);
 
-	result findSolution(int stopTime);
+	result find_solution(int stopTime);
 
 	int calculateCost(std::vector<int> path);
 
