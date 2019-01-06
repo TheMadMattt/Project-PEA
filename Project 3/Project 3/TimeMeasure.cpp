@@ -44,7 +44,7 @@ void TimeMeasure::saveToFile(vector<result> &czasy, string path, int whichIt)
 
 	if (file.good())
 	{
-		file << whichIt << " czas" << endl;
+		file << whichIt << " " << whichIt << endl;
 		for (const result i : czasy)
 		{
 			file << i.bestSolutionTime/1000000 << " " << i.cost << endl;
