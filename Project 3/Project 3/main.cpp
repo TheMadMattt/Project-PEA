@@ -10,7 +10,7 @@ int main()
 	srand(time(nullptr));
 
 	Menu menu;
-	
+
 	menu.ChooseOptionMenu();
 
 	system("pause");
